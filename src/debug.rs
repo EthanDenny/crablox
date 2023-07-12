@@ -1,0 +1,51 @@
+use crate::chunk::Chunk;
+use crate::chunk::OpCode;
+
+pub fn disassemble_chunk(chunk: &Chunk, name: &str) {
+    println!("== {} ==", name);
+
+    let mut idx = 0;
+    while idx < chunk.codes.len() {
+        idx = disassemble_instruction(chunk, idx);
+    }
+}
+
+pub fn disassemble_instruction(chunk: &Chunk, idx: usize) -> usize {
+    print!("{:04} ", idx);
+    if idx > 0 && chunk.lines[idx] == chunk.lines[idx - 1] {
+      print!("   | ");
+    } else {
+      print!("{:4} ", chunk.lines[idx]);
+    }
+
+    let code = chunk.codes.get(idx);
+    if code == None { panic!("Index out of range in chunk"); }
+    let code = *code.unwrap();
+
+    match code {
+        x if x == OpCode::OpReturn as u8 => {
+            return simple_instruction("OpReturn", idx);
+        }
+        x if x == OpCode::OpConstant as u8 => {
+            return constant_instruction("OpConstant", chunk, idx);
+        }
+        _ => {
+            println!("Unknown opcode {}", code);
+            return idx + 1;
+        }
+    }
+}
+
+fn simple_instruction(name: &str, idx: usize) -> usize {
+    println!("{}", name);
+    return idx + 1;
+}
+
+fn constant_instruction(name: &str, chunk: &Chunk, idx: usize) -> usize {
+    let constant_idx = *chunk.codes.get(idx + 1).unwrap();
+
+    print!("{:<16} {:4} '", name, constant_idx);
+    println!("{}'", chunk.constants[constant_idx as usize]);
+
+    return idx + 2;
+}
