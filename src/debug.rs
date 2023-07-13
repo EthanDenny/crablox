@@ -13,9 +13,9 @@ pub fn disassemble_chunk(chunk: &Chunk, name: &str) {
 pub fn disassemble_instruction(chunk: &Chunk, idx: usize) -> usize {
     print!("{:04} ", idx);
     if idx > 0 && chunk.lines[idx] == chunk.lines[idx - 1] {
-      print!("   | ");
+        print!("   | ");
     } else {
-      print!("{:4} ", chunk.lines[idx]);
+        print!("{:4} ", chunk.lines[idx]);
     }
 
     let code = chunk.codes.get(idx);

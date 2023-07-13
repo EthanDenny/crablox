@@ -1,8 +1,9 @@
 use crate::chunk::Chunk;
 use crate::chunk::OpCode;
 use crate::debug;
+use crate::value::Value;
 
-const DEBUG_TRACE_EXECUTION : bool = false;
+const DEBUG_TRACE_EXECUTION : bool = true;
 
 pub enum InterpretResult {
     Ok,
@@ -14,6 +15,7 @@ pub struct VirtualMachine {}
 
 impl VirtualMachine {
     pub fn interpret(chunk: &Chunk) -> InterpretResult {
+        let mut stack : Vec<Value> = Vec::new();
         let mut ip = chunk.codes.iter().enumerate();
 
         loop {
@@ -24,11 +26,16 @@ impl VirtualMachine {
             let instruction = *next.unwrap().1;
 
             if DEBUG_TRACE_EXECUTION {
+                print!("          ");
+                stack.iter().for_each(|slot| print!("[ {} ]", slot));
+                print!("\n");
+
                 debug::disassemble_instruction(chunk, idx);
             }
             
             match instruction {
                 x if x == OpCode::Return as u8 => {
+                    println!("{}", stack.pop().unwrap());
                     return InterpretResult::Ok;
                 }
                 x if x == OpCode::Constant as u8 => {
@@ -38,7 +45,7 @@ impl VirtualMachine {
                     let constant_idx = *next.unwrap().1 as usize;
 
                     let constant = chunk.constants[constant_idx];
-                    println!("{}", constant);
+                    stack.push(constant);
                 }
                 x if x == OpCode::LongConstant as u8 => {
                     let mut constant_idx = 0;
@@ -53,7 +60,7 @@ impl VirtualMachine {
                     }
 
                     let constant = chunk.constants[constant_idx as usize];
-                    println!("{}", constant);
+                    stack.push(constant);
                 }
                 _ => {}
             }
