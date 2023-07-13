@@ -29,8 +29,11 @@ pub fn disassemble_instruction(chunk: &Chunk, idx: usize) -> usize {
         x if x == OpCode::OpConstant as u8 => {
             return constant_instruction("OpConstant", chunk, idx);
         }
+        x if x == OpCode::OpLongConstant as u8 => {
+            return long_constant_instruction("OpLongConstant", chunk, idx);
+        }
         _ => {
-            println!("Unknown opcode {}", code);
+            println!("Unknown opcode   {}", code);
             return idx + 1;
         }
     }
@@ -44,8 +47,20 @@ fn simple_instruction(name: &str, idx: usize) -> usize {
 fn constant_instruction(name: &str, chunk: &Chunk, idx: usize) -> usize {
     let constant_idx = *chunk.codes.get(idx + 1).unwrap();
 
-    print!("{:<16} {:4} '", name, constant_idx);
+    print!("{:<16} {:<5} '", name, constant_idx);
     println!("{}'", chunk.constants[constant_idx as usize]);
 
     return idx + 2;
+}
+
+fn long_constant_instruction(name: &str, chunk: &Chunk, idx: usize) -> usize {
+    let constant_idx =
+        *chunk.codes.get(idx + 1).unwrap() as usize * 256 * 256 +
+        *chunk.codes.get(idx + 2).unwrap() as usize * 256 +
+        *chunk.codes.get(idx + 3).unwrap() as usize;
+
+    print!("{:<16} {:<5} '", name, constant_idx);
+    println!("{}'", chunk.constants[constant_idx]);
+
+    return idx + 4;
 }
