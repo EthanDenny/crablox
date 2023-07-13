@@ -1,7 +1,7 @@
 pub enum OpCode {
-    OpReturn,
-    OpConstant,
-    OpLongConstant,
+    Return,
+    Constant,
+    LongConstant,
 }
 
 pub struct Chunk {
@@ -22,10 +22,10 @@ impl Chunk {
 
     pub fn write_constant(&mut self, constant_idx: usize, line: usize) {
         if constant_idx <= 255 {
-            self.write_code(OpCode::OpConstant, line);
+            self.write_code(OpCode::Constant, line);
             self.write_byte(constant_idx as u8, line);
         } else {
-            self.write_code(OpCode::OpLongConstant, line);
+            self.write_code(OpCode::LongConstant, line);
 
             self.write_byte((constant_idx / (256 * 256)) as u8, line);
             self.write_byte(((constant_idx / 256) % 256) as u8, line);

@@ -23,14 +23,14 @@ pub fn disassemble_instruction(chunk: &Chunk, idx: usize) -> usize {
     let code = *code.unwrap();
 
     match code {
-        x if x == OpCode::OpReturn as u8 => {
-            return simple_instruction("OpReturn", idx);
+        x if x == OpCode::Return as u8 => {
+            return simple_instruction("Return", idx);
         }
-        x if x == OpCode::OpConstant as u8 => {
-            return constant_instruction("OpConstant", chunk, idx);
+        x if x == OpCode::Constant as u8 => {
+            return constant_instruction("Constant", chunk, idx);
         }
-        x if x == OpCode::OpLongConstant as u8 => {
-            return long_constant_instruction("OpLongConstant", chunk, idx);
+        x if x == OpCode::LongConstant as u8 => {
+            return long_constant_instruction("LongConstant", chunk, idx);
         }
         _ => {
             println!("Unknown opcode   {}", code);

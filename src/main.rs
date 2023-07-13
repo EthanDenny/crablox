@@ -26,7 +26,7 @@ fn main() {
     let constant = chunk.add_constant(3.0);
 
     chunk.write_constant(constant, 125);
-    chunk.write_code(OpCode::OpReturn, 126);
+    chunk.write_code(OpCode::Return, 126);
     chunk.write_byte(12, 127);
 
     debug::disassemble_chunk(&chunk, "test chunk");
