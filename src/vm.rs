@@ -2,6 +2,8 @@ use crate::chunk::Chunk;
 use crate::chunk::OpCode;
 use crate::debug;
 
+const DEBUG_TRACE_EXECUTION : bool = false;
+
 pub enum InterpretResult {
     Ok,
     CompileError,
@@ -21,7 +23,9 @@ impl VirtualMachine {
             let idx = next.unwrap().0;
             let instruction = *next.unwrap().1;
 
-            debug::disassemble_instruction(chunk, idx);
+            if DEBUG_TRACE_EXECUTION {
+                debug::disassemble_instruction(chunk, idx);
+            }
             
             match instruction {
                 x if x == OpCode::Return as u8 => {
