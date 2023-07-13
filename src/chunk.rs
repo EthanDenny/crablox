@@ -26,7 +26,6 @@ impl Chunk {
             self.write_byte(constant_idx as u8, line);
         } else {
             self.write_code(OpCode::LongConstant, line);
-
             self.write_byte((constant_idx / (256 * 256)) as u8, line);
             self.write_byte(((constant_idx / 256) % 256) as u8, line);
             self.write_byte((constant_idx % 256) as u8, line);

@@ -1,8 +1,11 @@
 pub mod chunk;
 pub mod debug;
+pub mod value;
+pub mod vm;
 
 use crate::chunk::Chunk;
 use crate::chunk::OpCode;
+use crate::vm::VirtualMachine;
 
 fn main() {
     let mut chunk = Chunk::new();
@@ -29,5 +32,5 @@ fn main() {
     chunk.write_code(OpCode::Return, 126);
     chunk.write_byte(12, 127);
 
-    debug::disassemble_chunk(&chunk, "test chunk");
+    VirtualMachine::interpret(&chunk);
 }
