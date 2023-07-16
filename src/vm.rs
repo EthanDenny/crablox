@@ -34,10 +34,6 @@ impl VirtualMachine {
             }
             
             match instruction {
-                x if x == OpCode::Return as u8 => {
-                    println!("{}", stack.pop().unwrap());
-                    return InterpretResult::Ok;
-                }
                 x if x == OpCode::Constant as u8 => {
                     let next = ip.next();
                     if next == None { return InterpretResult::CompileError; }
@@ -62,8 +58,34 @@ impl VirtualMachine {
                     let constant = chunk.constants[constant_idx as usize];
                     stack.push(constant);
                 }
+                x if x == OpCode::Add as u8 => {
+                    VirtualMachine::binary_op(&mut stack, |a, b| a + b);
+                }
+                x if x == OpCode::Subtract as u8 => {
+                    VirtualMachine::binary_op(&mut stack, |a, b| a - b);
+                }
+                x if x == OpCode::Multiply as u8 => {
+                    VirtualMachine::binary_op(&mut stack, |a, b| a * b);
+                }
+                x if x == OpCode::Divide as u8 => {
+                    VirtualMachine::binary_op(&mut stack, |a, b| a / b);
+                }
+                x if x == OpCode::Negate as u8 => {
+                    let v = stack.pop().unwrap();
+                    stack.push(-v);
+                }
+                x if x == OpCode::Return as u8 => {
+                    println!("{}", stack.pop().unwrap());
+                    return InterpretResult::Ok;
+                }
                 _ => {}
             }
         }
+    }
+
+    fn binary_op(stack: &mut Vec<Value>, f: impl Fn(Value, Value) -> Value) {
+        let b = stack.pop().unwrap();
+        let a = stack.pop().unwrap();
+        stack.push(f(a, b));
     }
 }

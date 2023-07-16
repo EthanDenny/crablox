@@ -1,9 +1,14 @@
 use crate::value::Value;
 
 pub enum OpCode {
-    Return,
     Constant,
     LongConstant,
+    Add,
+    Subtract,
+    Multiply,
+    Divide,
+    Negate,
+    Return,
 }
 
 pub struct Chunk {
