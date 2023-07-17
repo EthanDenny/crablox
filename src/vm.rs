@@ -5,6 +5,7 @@ use crate::value::Value;
 
 const DEBUG_TRACE_EXECUTION : bool = true;
 
+#[derive(PartialEq)]
 pub enum InterpretResult {
     Ok,
     CompileError,

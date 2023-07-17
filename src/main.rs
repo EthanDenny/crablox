@@ -1,30 +1,52 @@
 pub mod chunk;
+pub mod compiler;
 pub mod debug;
+pub mod scanner;
 pub mod value;
 pub mod vm;
 
-use crate::chunk::Chunk;
-use crate::chunk::OpCode;
-use crate::vm::VirtualMachine;
+use std::env;
+use std::fs;
+use std::io;
+use std::io::Write;
+use std::process;
+
+use crate::vm::InterpretResult;
 
 fn main() {
-    let mut chunk = Chunk::new();
+    let args: Vec<String> = env::args().collect();
+    
+    if args.len() == 1 {
+        repl();
+    } else if args.len() == 2 {
+        run_file(&args[1]);
+    } else {
+        eprintln!("Usage: clox [path]\n");
+        process::exit(64);
+    }
+}
 
-    let constant_idx = chunk.add_constant(1.2);
-    chunk.write_constant(constant_idx, 123);
+fn repl() {
+    loop {
+        print!("> ");
+        io::stdout().flush().unwrap();
+        let mut line = String::new();
+        io::stdin().read_line(&mut line).expect("Could not read line");
+        interpret(line);
+    }
+}
 
-    let constant_idx = chunk.add_constant(3.4);
-    chunk.write_constant(constant_idx, 123);
+fn run_file(path: &String) {
+    let source = fs::read_to_string(path)
+        .expect("Could not read file");
 
-    chunk.write_code(OpCode::Add, 123);
+    let result = interpret(source);
+  
+    if result == InterpretResult::CompileError { process::exit(65); }
+    if result == InterpretResult::RuntimeError { process::exit(70); }
+}
 
-    let constant_idx = chunk.add_constant(5.6);
-    chunk.write_constant(constant_idx, 123);
-
-    chunk.write_code(OpCode::Divide, 123);
-    chunk.write_code(OpCode::Negate, 123);
-
-    chunk.write_code(OpCode::Return, 123);
-
-    VirtualMachine::interpret(&chunk);
+fn interpret(source: String) -> InterpretResult {
+    compiler::compile(source);
+    InterpretResult::Ok
 }
